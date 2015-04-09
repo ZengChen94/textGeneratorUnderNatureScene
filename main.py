@@ -4,6 +4,7 @@ import sys
 import os.path
 import random
 import math
+import Image
 
 def pathWalk(path):
     paths = []
@@ -15,8 +16,12 @@ def pathWalk(path):
 if __name__ == '__main__':
     fonts = pathWalk('fonts/')
     randomFont = random.choice(fonts)
-    randomFont = randomFont[0] + randomFont[1]
+    randomFont = randomFont[0] + '/' + randomFont[1]
 
+    bgImgs = pathWalk('sceneDataset/')
+    randomBgImg = random.choice(bgImgs)
+    randomBgImg = randomBgImg[0] + '/' +randomBgImg[1]
+    
     words = raw_input("input words, please:")
     saveName = './dataset/' + words + '.png'
     print words
@@ -39,15 +44,15 @@ if __name__ == '__main__':
     wordsHeightRotate = wordsWidth * math.sin(alpha) + wordsHeight * math.cos(alpha)
     wordsWidthRotate = wordsWidth * math.cos(alpha) + wordsHeight * math.sin(alpha)
     '''calculate some parameter'''
-    sizeHeight = wordsHeightRotate + 30*2;
-    sizeWidth = wordsWidthRotate + 25*2;
-    offsetX = random.randint(25, 35) + wordsHeight * math.sin(alpha);
-    offsetY = random.randint(20, 30) + wordsHeightRotate;
-
-#    sizeHeight = wordsHeight + 30*2;
-#    sizeWidth = wordsWidth + 30*2;
-#    offsetX = random.randint(25, 35);
-#    offsetY = random.randint(25, 35) + wordsHeight;
+    #sizeHeight = wordsHeight + 20*2;#fix the height
+    #sizeWidth = wordsWidthRotate + 20*2;
+    #offsetX = random.randint(25, 35) + wordsHeight * math.sin(alpha);
+    ##offsetY = random.randint(20, 30) + wordsHeightRotate;
+    #offsetY = int((wordsHeightRotate + sizeHeight)/2)
+    sizeHeight = wordsHeight + 30*2;
+    sizeWidth = wordsWidth + 30*2;
+    offsetX = random.randint(25, 35);
+    offsetY = random.randint(25, 35) + wordsHeight;
 
     sizeWeightHeight = str(sizeWidth) + 'x' + str(sizeHeight)
     sizeAnnotote = str(rotateX) + 'x' + str(rotateY) + '+' + str(offsetX) + '+' + str(offsetY)
@@ -81,6 +86,8 @@ if __name__ == '__main__':
     print '---------------step2: border/shadow rendering finished---------------'
 
     print '---------------step3: base color---------------'
+    command = command + saveName
+    os.system(command)
     print '---------------step3: base color finished---------------'
 
     print '---------------step4: projective distortion---------------'
@@ -91,12 +98,15 @@ if __name__ == '__main__':
     '''maybe we can store it as img at here, and then handle the img, including blending nature features, noise, blur and so on'''
 
     print '---------------step5: natural data blending---------------'
+    #front 30% + bg 70%
+    #command = 'composite -gravity northwest -blend 30 ' + saveName + ' ' + randomBgImg + ' ' + saveName
+    #os.system(command)
     print '---------------step5: natural data blending finished---------------'
     
     print '---------------step6: noise making---------------'
     #whether blur, with probility 25%
-    if random.randint(1, 4) == 1:
-        command = command + ' -blur 0x3 '
+    #if random.randint(1, 4) == 1:
+    #    command = command + ' -blur 0x3 '
     '''these features haven't been considered'''
     #make the whole font look like it is a 3 dimensional mountain ridge
     #command = command + ' -shade 135x30 -auto-level +level 10,90% '
@@ -104,5 +114,5 @@ if __name__ == '__main__':
     #command = command + ' -adaptive-blur 0x2 '
     print '---------------step6: noise making finished---------------'
     
-    command = command + saveName
-    os.system(command)
+    #command = command + saveName
+    #os.system(command)
