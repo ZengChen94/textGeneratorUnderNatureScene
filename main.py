@@ -88,6 +88,8 @@ if __name__ == '__main__':
     #command = command + ' -wave -50x640 -crop x110+0+10 '
     print '---------------step4: projective distortion finished---------------'
 
+    '''maybe we can store it as img at here, and then handle the img, including blending nature features, noise, blur and so on'''
+
     print '---------------step5: natural data blending---------------'
     print '---------------step5: natural data blending finished---------------'
     
@@ -101,5 +103,6 @@ if __name__ == '__main__':
     #mooth the result to generate a better and strangely shiny look to the resulting font
     #command = command + ' -adaptive-blur 0x2 '
     print '---------------step6: noise making finished---------------'
+    
     command = command + saveName
     os.system(command)
