@@ -40,9 +40,9 @@ if __name__ == '__main__':
     else:
         rotateY = rotateX
     '''#adjust the size of bg and position of text'''
-    alpha = math.pi * 2 - math.pi / 180 * rotateX
-    wordsHeightRotate = wordsWidth * math.sin(alpha) + wordsHeight * math.cos(alpha)
-    wordsWidthRotate = wordsWidth * math.cos(alpha) + wordsHeight * math.sin(alpha)
+    #alpha = math.pi * 2 - math.pi / 180 * rotateX
+    #wordsHeightRotate = wordsWidth * math.sin(alpha) + wordsHeight * math.cos(alpha)
+    #wordsWidthRotate = wordsWidth * math.cos(alpha) + wordsHeight * math.sin(alpha)
     '''calculate some parameter'''
     #sizeHeight = wordsHeight + 20*2;#fix the height
     #sizeWidth = wordsWidthRotate + 20*2;
@@ -51,16 +51,19 @@ if __name__ == '__main__':
     #offsetY = int((wordsHeightRotate + sizeHeight)/2)
     sizeHeight = wordsHeight + 30*2;
     sizeWidth = wordsWidth + 30*2;
-    offsetX = random.randint(25, 35);
-    offsetY = random.randint(25, 35) + wordsHeight;
-
+    #offsetX = random.randint(25, 35);
+    #offsetY = random.randint(25, 35) + wordsHeight;
+    #print rotateX, rotateY, offsetX, offsetY
     sizeWeightHeight = str(sizeWidth) + 'x' + str(sizeHeight)
-    sizeAnnotote = str(rotateX) + 'x' + str(rotateY) + '+' + str(offsetX) + '+' + str(offsetY)
-    shadowAnnotote = str(rotateX) + 'x' + str(rotateY) + '+' + str(offsetX+5) + '+' + str(offsetY+5)
+    #sizeAnnotote = str(rotateX) + 'x' + str(rotateY) + '+' + str(offsetX) + '+' + str(offsetY)
+    #shadowAnnotote = str(rotateX) + 'x' + str(rotateY) + '+' + str(offsetX+5) + '+' + str(offsetY+5)
+    sizeAnnotote = str(rotateX) + 'x' + str(rotateY)
+    shadowAnnotote = str(rotateX) + 'x' + str(rotateY) + '+5+5 '
 
     print '---------------step1: font rendering---------------'
-    command = 'convert -size ' + sizeWeightHeight + ' xc:lightblue' + ' -font ' + randomFont + ' -pointsize ' + str(pointsize)
+    command = 'convert -size ' + sizeWeightHeight + ' xc:transparent' + ' -font ' + randomFont + ' -pointsize ' + str(pointsize)
     #pure or gradient color, yes or no both with probility 50%
+    command = command + ' -gravity center '
     if random.randint(1, 2) == 1:
         command = command + ' -fill blue '
     else:
@@ -70,16 +73,16 @@ if __name__ == '__main__':
     print '---------------step2: border/shadow rendering---------------'
     #whether shadow, yes or no both with probility 50%
     if random.randint(1, 2) == 1:
-        command = command + ' -annotate ' + shadowAnnotote + ' ' + words + ' -blur 0x4 '
+        command = command + ' -gravity center ' + ' -annotate ' + shadowAnnotote + ' ' + words + ' -blur 0x4 '
     #single stroke, double stroke or none, yes or no both with probility 50%
     tmp = random.randint(1, 3)
     if tmp == 1:
-        command = command + ' -stroke navy -strokewidth 2 '
+        command = command + ' -gravity center ' + ' -stroke navy -strokewidth 2 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
     elif tmp == 2:
-        command = command + ' -stroke black -strokewidth 3 '
+        command = command + ' -gravity center ' + ' -stroke black -strokewidth 3 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
-        command = command + ' -stroke white -strokewidth 1 '
+        command = command + ' -gravity center ' + ' -stroke white -strokewidth 1 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
     else:
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
@@ -98,9 +101,12 @@ if __name__ == '__main__':
     '''maybe we can store it as img at here, and then handle the img, including blending nature features, noise, blur and so on'''
 
     print '---------------step5: natural data blending---------------'
+    command = 'convert -crop '
+    command = command + str(sizeWidth) + 'x' + str(sizeHeight) + ' +0+0 ' + randomBgImg + ' tmp.png'
+    os.system(command)
     #front 30% + bg 70%
-    #command = 'composite -gravity northwest -blend 30 ' + saveName + ' ' + randomBgImg + ' ' + saveName
-    #os.system(command)
+    command = 'composite -gravity northwest -blend 30 ' + saveName + ' ' + ' tmp.png ' + ' ' + saveName
+    os.system(command)
     print '---------------step5: natural data blending finished---------------'
     
     print '---------------step6: noise making---------------'
