@@ -75,26 +75,32 @@ if __name__ == '__main__':
     #whether shadow, yes or no both with probility 50%
     if random.randint(1, 2) == 1:
         command = command + ' -gravity center ' + ' -annotate ' + shadowAnnotote + ' ' + words + ' -blur 0x4 '
+        print 'shadow'
     else:
         command = command + ' -gravity center '
+        print 'no shadow'
     #single stroke, double stroke or none, yes or no both with probility 50%
     tmp = random.randint(1, 3)
     if tmp == 1:
         command = command + ' -gravity center ' + ' -stroke navy -strokewidth 2 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
+        print '1 stroke'
     elif tmp == 2:
         command = command + ' -gravity center ' + ' -stroke black -strokewidth 3 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
         command = command + ' -gravity center ' + ' -stroke white -strokewidth 1 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
+        print '2 stroke'
     else:
         command = command + ' -gravity center ' + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
+        print 'no stroke'
     print '---------------step2: border/shadow rendering finished---------------'
 
 
     print '---------------step3: base color---------------'
     command = command + saveName
     os.system(command)
+    print command
     print '---------------step3: base color finished---------------'
 
 
