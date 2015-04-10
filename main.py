@@ -49,8 +49,8 @@ if __name__ == '__main__':
     #offsetX = random.randint(25, 35) + wordsHeight * math.sin(alpha);
     ##offsetY = random.randint(20, 30) + wordsHeightRotate;
     #offsetY = int((wordsHeightRotate + sizeHeight)/2)
-    sizeHeight = wordsHeight + 30*2;
-    sizeWidth = wordsWidth + 30*2;
+    sizeHeight = wordsHeight + 20*2;
+    sizeWidth = wordsWidth + 20*2;
     #offsetX = random.randint(25, 35);
     #offsetY = random.randint(25, 35) + wordsHeight;
     #print rotateX, rotateY, offsetX, offsetY
@@ -69,11 +69,14 @@ if __name__ == '__main__':
     else:
         command = command + ' -tile gradient:blue-red '
     print '---------------step1: font rendering finished---------------'
+
         
     print '---------------step2: border/shadow rendering---------------'
     #whether shadow, yes or no both with probility 50%
     if random.randint(1, 2) == 1:
         command = command + ' -gravity center ' + ' -annotate ' + shadowAnnotote + ' ' + words + ' -blur 0x4 '
+    else:
+        command = command + ' -gravity center '
     #single stroke, double stroke or none, yes or no both with probility 50%
     tmp = random.randint(1, 3)
     if tmp == 1:
@@ -85,29 +88,34 @@ if __name__ == '__main__':
         command = command + ' -gravity center ' + ' -stroke white -strokewidth 1 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
     else:
-        command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
+        command = command + ' -gravity center ' + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
     print '---------------step2: border/shadow rendering finished---------------'
+
 
     print '---------------step3: base color---------------'
     command = command + saveName
     os.system(command)
     print '---------------step3: base color finished---------------'
 
+
     print '---------------step4: projective distortion---------------'
     '''these features haven't been considered'''
     #command = command + ' -wave -50x640 -crop x110+0+10 '
     print '---------------step4: projective distortion finished---------------'
 
-    '''maybe we can store it as img at here, and then handle the img, including blending nature features, noise, blur and so on'''
 
     print '---------------step5: natural data blending---------------'
     command = 'convert -crop '
-    command = command + str(sizeWidth) + 'x' + str(sizeHeight) + ' +0+0 ' + randomBgImg + ' tmp.png'
+    command = command + str(sizeWidth) + 'x' + str(sizeHeight) + '+0+0 ' + randomBgImg + ' tmp.png '
     os.system(command)
     #front 30% + bg 70%
-    command = 'composite -gravity northwest -blend 30 ' + saveName + ' ' + ' tmp.png ' + ' ' + saveName
+    command = 'composite -gravity northwest -blend 90 ' + saveName + ' ' + ' tmp.png ' + ' ' + './dataset/tmp.png'
+    os.system(command)
+    command = ' convert -blur 80 ' + './dataset/tmp.png' + './dataset/tmp.png'
+    #-blur 80x5
     os.system(command)
     print '---------------step5: natural data blending finished---------------'
+
     
     print '---------------step6: noise making---------------'
     #whether blur, with probility 25%
@@ -118,7 +126,10 @@ if __name__ == '__main__':
     #command = command + ' -shade 135x30 -auto-level +level 10,90% '
     #mooth the result to generate a better and strangely shiny look to the resulting font
     #command = command + ' -adaptive-blur 0x2 '
+    command = ' convert -swirl 67 ' + './dataset/tmp.png' + './dataset/tmp.png'
+    os.system(command)
+    command = ' convert -noise 5 ' + './dataset/tmp.png' + './dataset/tmp.png'
+    os.system(command)
     print '---------------step6: noise making finished---------------'
     
-    #command = command + saveName
-    #os.system(command)
+    
