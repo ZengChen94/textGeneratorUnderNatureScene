@@ -6,7 +6,7 @@ def randomWords():
     randomNum = random.randint(1, 15328)
 
     conn = win32com.client.Dispatch(r'ADODB.Connection')   
-    DSN = 'PROVIDER=Microsoft.Jet.OLEDB.4.0;DATA SOURCE=./EnWords_access.mdb;'   
+    DSN = 'PROVIDER=Microsoft.Jet.OLEDB.4.0;DATA SOURCE=./database/enword.mdb;'   
     conn.Open(DSN)
 
     rs = win32com.client.Dispatch(r'ADODB.Recordset')   
