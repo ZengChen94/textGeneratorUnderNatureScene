@@ -1,4 +1,11 @@
 # -*- coding: cp936 -*-
+
+#problems remain
+#1/color clusters
+#2/underline
+#3/width & height
+#4/arc structure
+
 import os
 import sys
 import os.path
@@ -35,17 +42,21 @@ def generator(words):
     saveName = './dataset/' + words + '_' + nowtime +'.png'
     print words
     length = len(words)#blank is included
-    pointsize = 22
+    pointsize = 24
     wordsHeight = pointsize
-    wordsWidth = int(pointsize * 5/7) * length
-    #whether slant, yes or no both with probility 50%
-    if random.randint(1, 2) == 1:
-        rotateX = random.randint(1, 10);
+    wordsWidth = int(pointsize * 0.7) * length
+
+    tmp = abs(random.gauss(0,1))
+    if tmp > 1:
+        if random.randint(1, 2) == 1:
+            rotateX = random.randint(1, 10);
+        else:
+            rotateX = random.randint(350, 360);
     else:
-        rotateX = random.randint(350, 360);
-    #whether italic, yes or no both with probility 50%
-    if random.randint(1, 2) == 1:
-        rotateY = rotateX + random.randint(4, 6)
+        rotateX = 0;
+
+    if abs(random.gauss(0,1)) > 1:
+        rotateY = rotateX + random.randint(3, 5)
     else:
         rotateY = rotateX
     '''#adjust the size of bg and position of text'''
@@ -58,8 +69,8 @@ def generator(words):
     #offsetX = random.randint(25, 35) + wordsHeight * math.sin(alpha);
     ##offsetY = random.randint(20, 30) + wordsHeightRotate;
     #offsetY = int((wordsHeightRotate + sizeHeight)/2)
-    sizeHeight = wordsHeight + 5*2;
-    sizeWidth = wordsWidth + 5*2;
+    sizeHeight = wordsHeight + 4*2;
+    sizeWidth = wordsWidth + 4*2;
     #offsetX = random.randint(25, 35);
     #offsetY = random.randint(25, 35) + wordsHeight;
     #print rotateX, rotateY, offsetX, offsetY
@@ -67,38 +78,38 @@ def generator(words):
     #sizeAnnotote = str(rotateX) + 'x' + str(rotateY) + '+' + str(offsetX) + '+' + str(offsetY)
     #shadowAnnotote = str(rotateX) + 'x' + str(rotateY) + '+' + str(offsetX+5) + '+' + str(offsetY+5)
     sizeAnnotote = str(rotateX) + 'x' + str(rotateY)
-    shadowAnnotote = str(rotateX) + 'x' + str(rotateY) + '+5+5 '
+    shadowAnnotote = str(rotateX) + 'x' + str(rotateY) + '+2+2 '
 
     print '---------------step1: font rendering---------------'
     command = 'convert -size ' + sizeWeightHeight + ' xc:transparent' + ' -font ' + randomFont + ' -pointsize ' + str(pointsize)
-    #pure or gradient color, yes or no both with probility 50%
+
     command = command + ' -gravity center '
-    if random.randint(1, 2) == 1:
-        randomColor = random.choice(colors)
-        command = command + ' -gravity center ' + ' -fill ' + randomColor + ' '
-    else:
-        randomColor1 = random.choice(colors)
-        randomColor2 = random.choice(colors)
-        command = command + ' -tile gradient:' + randomColor1 + '-' + randomColor2 + ' '
+    # if abs(random.gauss(0,1)) < 1:
+    randomColor = random.choice(colors)
+    command = command + ' -gravity center ' + ' -fill ' + randomColor + ' '
+    # else:
+        # randomColor1 = random.choice(colors)
+        # randomColor2 = random.choice(colors)
+        # command = command + ' -gravity center ' + ' -tile gradient:' + randomColor1 + '-' + randomColor2 + ' '
     print '---------------step1: font rendering finished---------------'
 
         
     print '---------------step2: border/shadow rendering---------------'
-    #whether shadow, yes or no both with probility 50%
-    if random.randint(1, 2) == 1:
+
+    if 2 > 1:
         command = command + ' -gravity center ' + ' -annotate ' + shadowAnnotote + ' ' + words + ' -blur 0x1 '
         print 'shadow'
     else:
         command = command + ' -gravity center '
         print 'no shadow'
-    #single stroke, double stroke or none, yes or no both with probility 50%
-    tmp = random.randint(1, 3)
-    if tmp == 1:
+
+    tmp = abs(random.gauss(0,1))
+    if tmp > 1.2:
         command = command + ' -gravity center ' + ' -stroke navy -strokewidth 2 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
         print '1 stroke'
-    elif tmp == 2:
-        command = command + ' -gravity center ' + ' -stroke black -strokewidth 3 '
+    elif tmp > 1:
+        command = command + ' -gravity center ' + ' -stroke black -strokewidth 2 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
         command = command + ' -gravity center ' + ' -stroke white -strokewidth 1 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
@@ -126,19 +137,18 @@ def generator(words):
     command = 'convert -crop '
     command = command + str(sizeWidth) + 'x' + str(sizeHeight) + '+0+0 ' + randomBgImg + ' tmp.png '
     os.system(command)
-    #front 30% + bg 70%
+    #front 10% + bg 90%
     command = 'composite -gravity northwest -blend 90 ' + saveName + ' ' + ' tmp.png ' + ' ' + saveName
     os.system(command)
     randomBlur = random.randint(60, 90)
     command = ' convert -blur ' + str(randomBlur) + ' ' + saveName + ' ' + saveName
-    #-blur 80x5
+    #or -blur 80x5
     os.system(command)
     print '---------------step5: natural data blending finished---------------'
 
     
     print '---------------step6: noise making---------------'
     '''these features haven't been considered'''
-    #whether blur, with probility 25%
     #if random.randint(1, 4) == 1:
     #    command = command + ' -blur 0x3 '
     #make the whole font look like it is a 3 dimensional mountain ridge
@@ -155,9 +165,12 @@ def generator(words):
     print '---------------step6: noise making finished---------------'
     
 if __name__ == '__main__':
-    for i in range(1, 10):
+    for i in range(1, 100):
+        print i
         num = random.randint(5, 10)
         #words = string.join(random.sample(['z','y','x','w','v','u','t','s','r','q','p','o','n','m','l','k','j','i','h','g','f','e','d','c','b','a'], num)).replace(' ','')
         words = python2access.randomWords()
+        while ' ' in words:
+            words = python2access.randomWords()
         generator(words)
         #os.system("pause")
