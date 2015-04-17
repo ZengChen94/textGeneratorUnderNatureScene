@@ -37,6 +37,9 @@ def generator(words):
     bgImgs = pathWalk('sceneDataset/')
     randomBgImg = random.choice(bgImgs)
     randomBgImg = randomBgImg[0] + '/' +randomBgImg[1]
+    while randomBgImg[len(randomBgImg)-3:len(randomBgImg)] == 'txt':
+        randomBgImg = random.choice(bgImgs)
+        randomBgImg = randomBgImg[0] + '/' +randomBgImg[1]
     
     #words = raw_input("input words, please:")
     saveName = './dataset/' + words + '_' + nowtime +'.png'
@@ -46,37 +49,19 @@ def generator(words):
     wordsHeight = pointsize
     wordsWidth = int(pointsize * 0.7) * length
 
-    tmp = abs(random.gauss(0,1))
-    if tmp > 1:
-        if random.randint(1, 2) == 1:
-            rotateX = random.randint(1, 10);
-        else:
-            rotateX = random.randint(350, 360);
+    tmp = int(math.floor(abs(random.gauss(0,1))*5))
+    if random.randint(1, 2) == 1:
+        rotateX = random.randint(0, tmp);
     else:
-        rotateX = 0;
+        rotateX = random.randint(360-tmp, 360);
 
-    if abs(random.gauss(0,1)) > 1:
-        rotateY = rotateX + random.randint(3, 5)
-    else:
-        rotateY = rotateX
-    '''#adjust the size of bg and position of text'''
-    #alpha = math.pi * 2 - math.pi / 180 * rotateX
-    #wordsHeightRotate = wordsWidth * math.sin(alpha) + wordsHeight * math.cos(alpha)
-    #wordsWidthRotate = wordsWidth * math.cos(alpha) + wordsHeight * math.sin(alpha)
-    '''calculate some parameter'''
-    #sizeHeight = wordsHeight + 20*2;#fix the height
-    #sizeWidth = wordsWidthRotate + 20*2;
-    #offsetX = random.randint(25, 35) + wordsHeight * math.sin(alpha);
-    ##offsetY = random.randint(20, 30) + wordsHeightRotate;
-    #offsetY = int((wordsHeightRotate + sizeHeight)/2)
+    rotateY = rotateX + random.randint(0, int(math.floor(abs(random.gauss(0,1))*5)))
+
     sizeHeight = wordsHeight + 4*2;
     sizeWidth = wordsWidth + 4*2;
-    #offsetX = random.randint(25, 35);
-    #offsetY = random.randint(25, 35) + wordsHeight;
-    #print rotateX, rotateY, offsetX, offsetY
+    
     sizeWeightHeight = str(sizeWidth) + 'x' + str(sizeHeight)
-    #sizeAnnotote = str(rotateX) + 'x' + str(rotateY) + '+' + str(offsetX) + '+' + str(offsetY)
-    #shadowAnnotote = str(rotateX) + 'x' + str(rotateY) + '+' + str(offsetX+5) + '+' + str(offsetY+5)
+
     sizeAnnotote = str(rotateX) + 'x' + str(rotateY)
     shadowAnnotote = str(rotateX) + 'x' + str(rotateY) + '+2+2 '
 
@@ -96,19 +81,18 @@ def generator(words):
         
     print '---------------step2: border/shadow rendering---------------'
 
-    if 2 > 1:
+    if int(math.floor(abs(random.gauss(0,1)))) > 1:
         command = command + ' -gravity center ' + ' -annotate ' + shadowAnnotote + ' ' + words + ' -blur 0x1 '
         print 'shadow'
     else:
         command = command + ' -gravity center '
         print 'no shadow'
 
-    tmp = abs(random.gauss(0,1))
-    if tmp > 1.2:
+    if int(math.floor(abs(random.gauss(0,1)))) > 1:
         command = command + ' -gravity center ' + ' -stroke navy -strokewidth 2 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
         print '1 stroke'
-    elif tmp > 1:
+    elif int(math.floor(abs(random.gauss(0,1)))) > 1:
         command = command + ' -gravity center ' + ' -stroke black -strokewidth 2 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
         command = command + ' -gravity center ' + ' -stroke white -strokewidth 1 '
@@ -140,7 +124,7 @@ def generator(words):
     #front 10% + bg 90%
     command = 'composite -gravity northwest -blend 90 ' + saveName + ' ' + ' tmp.png ' + ' ' + saveName
     os.system(command)
-    randomBlur = random.randint(60, 90)
+    randomBlur = int(math.floor(abs(random.gauss(0,1))*40))
     command = ' convert -blur ' + str(randomBlur) + ' ' + saveName + ' ' + saveName
     #or -blur 80x5
     os.system(command)
@@ -149,28 +133,19 @@ def generator(words):
     
     print '---------------step6: noise making---------------'
     '''these features haven't been considered'''
-    #if random.randint(1, 4) == 1:
-    #    command = command + ' -blur 0x3 '
-    #make the whole font look like it is a 3 dimensional mountain ridge
-    #command = command + ' -shade 135x30 -auto-level +level 10,90% '
-    #mooth the result to generate a better and strangely shiny look to the resulting font
-    #command = command + ' -adaptive-blur 0x2 '
     swirl = random.randint(1, 5)
     command = ' convert -swirl ' + str(swirl) + ' ' + saveName + ' ' + saveName
     os.system(command)
-    command = ' convert -noise 1 ' + saveName + ' ' + saveName
-    os.system(command)
-    command = 'convert '+ saveName + ' -colorspace Gray '+ saveName
-    os.system(command)
+    #command = ' convert -noise 1 ' + saveName + ' ' + saveName
+    #os.system(command)
+    #command = 'convert '+ saveName + ' -colorspace Gray '+ saveName
+    #os.system(command)
     print '---------------step6: noise making finished---------------'
     
 if __name__ == '__main__':
-    for i in range(1, 100):
+    for i in range(20):
         print i
-        num = random.randint(5, 10)
-        #words = string.join(random.sample(['z','y','x','w','v','u','t','s','r','q','p','o','n','m','l','k','j','i','h','g','f','e','d','c','b','a'], num)).replace(' ','')
         words = python2access.randomWords()
         while ' ' in words:
             words = python2access.randomWords()
         generator(words)
-        #os.system("pause")
