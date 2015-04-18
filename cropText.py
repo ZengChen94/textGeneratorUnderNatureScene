@@ -8,8 +8,8 @@ def cropText(name):
     im = Image.open(name)
     width = im.size[0]  
     height = im.size[1] 
-    print "/* width:%d */"%(width)  
-    print "/* height:%d */"%(height) 
+    #print "/* width:%d */"%(width)  
+    #print "/* height:%d */"%(height) 
     alpha = im.convert('RGBA').split()[-1]
      
      

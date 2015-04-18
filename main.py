@@ -109,6 +109,24 @@ def generator(words):
     os.system(command)
     print command
     [left, right, high, low, width, height] = cropText.cropText(saveName)
+    if left > 1:
+        left = left - 2
+    elif left > 0:
+        left = left - 1
+    if high > 1:
+        high = high - 2
+    elif left > 0:
+        high = high - 1
+    if right < sizeWidth - 2:
+        right = right + 2
+    elif right < sizeWidth - 1:
+        right = right + 1
+    if low < sizeHeight - 2:
+        low = low + 2
+    elif low < sizeHeight - 1:
+        low = low + 1
+    width = right - left + 1
+    height = low - high + 1
     command = 'convert ' + saveName + ' -crop ' + str(width) + 'x' + str(height) + '+' + str(left) + '+' + str(high) + ' ' + saveName
     os.system(command)
     sizeHeight = 35
