@@ -40,11 +40,28 @@ def generator(words):
     while randomBgImg[len(randomBgImg)-3:len(randomBgImg)] == 'txt':
         randomBgImg = random.choice(bgImgs)
         randomBgImg = randomBgImg[0] + '/' +randomBgImg[1]
+
+    texts = pathWalk('sceneDataset/')
+    textName = random.choice(texts)
+    textName = textName[0] + '/' +textName[1]
+    while textName[len(textName)-3:len(textName)] != 'txt':
+        textName = random.choice(texts)
+        textName = textName[0] + '/' +textName[1]
+    result = []
+    fileHandle = open ( textName, 'r' )
+    for line in fileHandle.readlines():
+        line = line[0:-1]
+        result.append(map(int, line.split(' ')))
+    fileHandle.close()
     
-    #words = raw_input("input words, please:")
+    [color1, color2, color3] = random.sample(result, 3)
+    bgcolor = (color3[0], color3[1], color3[2])
+    color1 = "'rgb(" + str(color1[0]) + ',' + str(color1[1]) + ',' + str(color1[2]) + ")'"
+    color2 = "'rgb(" + str(color2[0]) + ',' + str(color2[1]) + ',' + str(color2[2]) + ")'"
+    color3 = "'rgb(" + str(color3[0]) + ',' + str(color3[1]) + ',' + str(color3[2]) + ")'"
+    
     saveName = './dataset/' + words + '_' + nowtime +'.png'
-    print words
-    length = len(words)#blank is included
+    length = len(words)
     pointsize = 24
     wordsHeight = pointsize
     wordsWidth = int(pointsize * 0.7) * length
@@ -68,14 +85,7 @@ def generator(words):
     print '---------------step1: font rendering---------------'
     command = 'convert -size ' + sizeWeightHeight + ' xc:transparent' + ' -font ' + randomFont + ' -pointsize ' + str(pointsize)
 
-    command = command + ' -gravity center '
-    # if abs(random.gauss(0,1)) < 1:
-    randomColor = random.choice(colors)
-    command = command + ' -gravity center ' + ' -fill ' + randomColor + ' '
-    # else:
-        # randomColor1 = random.choice(colors)
-        # randomColor2 = random.choice(colors)
-        # command = command + ' -gravity center ' + ' -tile gradient:' + randomColor1 + '-' + randomColor2 + ' '
+    command = command + ' -gravity center ' + ' -fill ' + color1 + ' '
     print '---------------step1: font rendering finished---------------'
 
         
@@ -88,16 +98,18 @@ def generator(words):
         command = command + ' -gravity center '
         print 'no shadow'
 
-    if int(math.floor(abs(random.gauss(0,1)))) > 1:
-        command = command + ' -gravity center ' + ' -stroke navy -strokewidth 2 '
+    if int(math.floor(abs(random.gauss(0,1)))) > 0.8:
+        command = command + ' -gravity center ' + ' -stroke ' + color2 + ' -strokewidth 2 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
         print '1 stroke'
+        '''
     elif int(math.floor(abs(random.gauss(0,1)))) > 1:
         command = command + ' -gravity center ' + ' -stroke black -strokewidth 2 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
         command = command + ' -gravity center ' + ' -stroke white -strokewidth 1 '
         command = command + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
         print '2 stroke'
+'''
     else:
         command = command + ' -gravity center ' + ' -annotate ' + sizeAnnotote + ' ' + words + ' '
         print 'no stroke'
@@ -146,6 +158,14 @@ def generator(words):
     command = 'convert -crop '
     command = command + str(sizeWidth) + 'x' + str(sizeHeight) + '+0+0 ' + randomBgImg + ' tmp.png '
     os.system(command)
+    
+    command = 'convert '+ ' tmp.png ' + ' -colorspace Gray '+ ' tmp.png '
+    os.system(command)
+    pureimage = Image.new('RGB',(sizeWidth,sizeHeight),bgcolor)
+    pureimage.save('pure.jpeg')
+    command = 'composite -gravity northwest -blend 50' + ' tmp.png ' + ' pure.jpeg ' +' tmp.png '
+    os.system(command)
+
     command = 'composite -gravity northwest -blend 90 ' + saveName + ' ' + ' tmp.png ' + ' ' + saveName
     os.system(command)
     randomBlur = int(math.floor(abs(random.gauss(0,1))*40))
@@ -161,8 +181,8 @@ def generator(words):
     os.system(command)
     #command = ' convert -noise 1 ' + saveName + ' ' + saveName
     #os.system(command)
-    #command = 'convert '+ saveName + ' -colorspace Gray '+ saveName
-    #os.system(command)
+    command = 'convert '+ saveName + ' -colorspace Gray '+ saveName
+    os.system(command)
     print '---------------step6: noise making finished---------------'
     
 if __name__ == '__main__':
