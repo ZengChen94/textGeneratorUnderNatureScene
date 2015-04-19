@@ -55,11 +55,29 @@ def generator(words):
     fileHandle.close()
     
     [color1, color2, color3] = random.sample(result, 3)
-    bgcolor = (color3[0], color3[1], color3[2])
-    color1 = "'rgb(" + str(color1[0]) + ',' + str(color1[1]) + ',' + str(color1[2]) + ")'"
-    color2 = "'rgb(" + str(color2[0]) + ',' + str(color2[1]) + ',' + str(color2[2]) + ")'"
-    color3 = "'rgb(" + str(color3[0]) + ',' + str(color3[1]) + ',' + str(color3[2]) + ")'"
+
+    while abs(color1[0] - color3[0]) < 50 or abs(color1[1] - color3[1]) < 50 or abs(color1[1] - color3[1]) < 50:
+        texts = pathWalk('sceneDataset/')
+        textName = random.choice(texts)
+        textName = textName[0] + '/' +textName[1]
+        while textName[len(textName)-3:len(textName)] != 'txt':
+            textName = random.choice(texts)
+            textName = textName[0] + '/' +textName[1]
+        result = []
+        fileHandle = open ( textName, 'r' )
+        for line in fileHandle.readlines():
+            line = line[0:-1]
+            result.append(map(int, line.split(' ')))
+        fileHandle.close()
+        [color1, color2, color3] = random.sample(result, 3)
     
+    bgcolor = (color3[0], color3[1], color3[2])
+    color1 = "rgb(" + str(color1[0]) + ',' + str(color1[1]) + ',' + str(color1[2]) + ")"
+    color2 = "rgb(" + str(color2[0]) + ',' + str(color2[1]) + ',' + str(color2[2]) + ")"
+    color3 = "rgb(" + str(color3[0]) + ',' + str(color3[1]) + ',' + str(color3[2]) + ")"
+    print color1, color2, color3
+     
+
     saveName = './dataset/' + words + '_' + nowtime +'.png'
     length = len(words)
     pointsize = 24
@@ -186,7 +204,7 @@ def generator(words):
     print '---------------step6: noise making finished---------------'
     
 if __name__ == '__main__':
-    for i in range(20):
+    for i in range(50):
         print i
         words = python2access.randomWords()
         while ' ' in words:
