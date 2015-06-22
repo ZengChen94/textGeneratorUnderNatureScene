@@ -3,10 +3,15 @@ from wand.color import Color
 from wand.drawing import Drawing
 import random
 import time
-import python2access_cn
 import os
 import math
+import pickle
+import linecache
 
+
+pkl_file = open('dictionary.pkl', 'rb')
+dic = pickle.load(pkl_file)
+pkl_file.close()
 
 def pathwalk(path):
     paths = []
@@ -15,15 +20,13 @@ def pathwalk(path):
             paths.append([root, fn])
     return paths
 
-time1 = time.time()
-result = []
-fileHandle = open('colorClusters.txt', 'r')
-for line in fileHandle.readlines():
-    line = line[0:-1]
-    result.append(line.split(' '))
-fileHandle.close()
+def randomWords():
+    randomNum = random.randint(1, 157651)
+    return linecache.getline('cnword.txt',randomNum)[0:-1]
 
-for j in range(100):
+
+
+def generate(wordNumber):
     # ---------------get three colors-------------------------------
     colorString = random.choice(result)
     color = []
@@ -37,9 +40,9 @@ for j in range(100):
     # --------------------------------------------------------------
 
     # ----------get the base layer texture--------------------------
-    Scenes = pathwalk('.\\SceneData\\')
+    Scenes = pathwalk('./SceneData')
     randomScene = random.choice(Scenes)
-    randomScene = randomScene[0] + randomScene[1]
+    randomScene = randomScene[0] + '/' + randomScene[1]
     # print(randomScene)
     randomSceneImage = Image(filename=randomScene)
 
@@ -60,10 +63,16 @@ for j in range(100):
     # --------------------------------------------------------------
 
     # -----generate font--------------------------------------------
-    word = python2access_cn.randomWords_cn()
-    fonts = pathwalk('.\\fonts\\font_cn\\')
+    word = randomWords()
+    word = word.decode('utf-8')
+
+    fonts = dic[u'\u4e00']
+    for wd in word:
+        fonts = fonts & dic.get(wd, set(['290.ttf']))
+
+    fonts = list(fonts)
     randomFont = random.choice(fonts)
-    randomFont = randomFont[0] + randomFont[1]
+    randomFont = './fonts/font_cn/' + randomFont
 
     initialPointsize = 45
 
@@ -80,6 +89,9 @@ for j in range(100):
     # --------------------------------------------------------------
     # --------get suitable FontPointSize----------------------------
     draw.font_size = initialPointsize
+
+    word = word.encode('utf-8')
+
     metric = draw.get_font_metrics(image=baseImage, text=word)
 
     while metric.text_width > 100 or metric.text_height > 36:
@@ -108,7 +120,7 @@ for j in range(100):
         addx = math.ceil(random.gauss(0, 2))
         addy = math.ceil(random.gauss(0, 2))
         draw.fill_color = Color('black')
-        draw.text(x=abs(addx), y=abs(addy), body=word)
+        draw.text(x=abs(int(addx)), y=abs(int(addy)), body=word)
 
     else:
         # border
@@ -128,11 +140,23 @@ for j in range(100):
     # --------------------------------------------------------------
 
     print(word)
-    baseImage.save(filename='.\\photoWand_cn\\'+str(j+1)+'.jpg')
+    baseImage.save(filename='./photo_cn/'+str(wordNumber)+'_'+word+'.jpg')
 
-
-time2 = time.time()
-print(time2-time1)
+if __name__ == '__main__':
+    time1 = time.time()
+    result = []
+    fileHandle = open('colorClusters.txt', 'r')
+    for line in fileHandle.readlines():
+        line = line[0:-1]
+        result.append(line.split(' '))
+    fileHandle.close()
+    for wordNumber in range(100):
+        try:
+            generate(wordNumber)
+        except:
+            pass
+    time2 = time.time()
+    print(time2-time1)
 
 # img = Image(width=200, height=200, background=Color('red'))
 # draw = Drawing()

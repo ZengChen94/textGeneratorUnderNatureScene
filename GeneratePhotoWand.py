@@ -3,9 +3,9 @@ from wand.color import Color
 from wand.drawing import Drawing
 import random
 import time
-import python2access
 import os
 import math
+import linecache
 
 
 def pathwalk(path):
@@ -15,15 +15,11 @@ def pathwalk(path):
             paths.append([root, fn])
     return paths
 
-time1 = time.time()
-result = []
-fileHandle = open('colorClusters.txt', 'r')
-for line in fileHandle.readlines():
-    line = line[0:-1]
-    result.append(line.split(' '))
-fileHandle.close()
+def randomWords():
+    randomNum = random.randint(1, 15328)
+    return linecache.getline('enword.txt',randomNum)[0:-1]
 
-for j in range(100):
+def generate(count):
     # ---------------get three colors-------------------------------
     colorString = random.choice(result)
     color = []
@@ -37,10 +33,11 @@ for j in range(100):
     # --------------------------------------------------------------
 
     # ----------get the base layer texture--------------------------
-    Scenes = pathwalk('.\\SceneData\\')
+    Scenes = pathwalk('./SceneData')
+
     randomScene = random.choice(Scenes)
-    randomScene = randomScene[0] + randomScene[1]
-    # print(randomScene)
+    randomScene = randomScene[0] + '/' + randomScene[1]
+    print(randomScene)
     randomSceneImage = Image(filename=randomScene)
 
     widthRange = randomSceneImage.size[0] - 100
@@ -51,6 +48,7 @@ for j in range(100):
     # --------------------------------------------------------------
 
     # ----------create the base layer, base texture +base color-----
+
     baseImage = Image(width=100, height=32, background=Color('rgb('+str(color1[0])+','+str(color1[1])+','+str(color1[2])+')'))
 
     # print('base_color = ' + 'rgb('+str(color1[0])+','+str(color1[1])+','+str(color1[2])+')')
@@ -60,8 +58,8 @@ for j in range(100):
     # --------------------------------------------------------------
 
     # -----generate font--------------------------------------------
-    word = python2access.randomWords()
-    fonts = pathwalk('.\\googleFonts\\')
+    word = randomWords()
+    fonts = pathwalk('./fonts/font_en/')
     randomFont = random.choice(fonts)
     randomFont = randomFont[0] + randomFont[1]
 
@@ -108,7 +106,7 @@ for j in range(100):
         addx = math.ceil(random.gauss(0, 2))
         addy = math.ceil(random.gauss(0, 2))
         draw.fill_color = Color('black')
-        draw.text(x=abs(addx), y=abs(addy), body=word)
+        draw.text(x=abs(int(addx)), y=abs(int(addy)), body=word)
 
     else:
         # border
@@ -118,7 +116,6 @@ for j in range(100):
 
     # ----------print word------------------------------------------
     draw.fill_color = Color('rgb('+str(color2[0])+','+str(color2[1])+','+str(color2[2])+')')
-    # print('font_color =' + 'rgb('+str(color2[0])+','+str(color2[1])+','+str(color2[2])+')')
     draw.text(x=0, y=0, body=word)
     draw.draw(baseImage)
     # --------------------------------------------------------------
@@ -128,7 +125,24 @@ for j in range(100):
     # --------------------------------------------------------------
 
     print(word)
-    baseImage.save(filename='.\\photoWand\\'+str(j+1)+'.jpg')
+    baseImage.save(filename='./photo_en/'+str(count+1)+'_'+word+'.jpg')
+
+
+time1 = time.time()
+result = []
+fileHandle = open('colorClusters.txt', 'r')
+
+for line in fileHandle.readlines():
+    line = line[0:-1]
+    result.append(line.split(' '))
+fileHandle.close()
+
+
+for count in range(100):
+    try:
+        generate(count)
+    except:
+        pass
 
 
 time2 = time.time()
